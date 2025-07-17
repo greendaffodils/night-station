@@ -1,30 +1,47 @@
 import React, { useState } from "react";
-import { ref, push } from "firebase/database";
-import { db } from "../firebase";
 
-function SongRequest() {
-  const [songUrl, setSongUrl] = useState("");
+const API_KEY = "YOUR_YOUTUBE_API_KEY"; // ✅ Replace with your YouTube API Key
 
-  const addSong = () => {
-    if (!songUrl.includes("youtube.com") && !songUrl.includes("youtu.be")) {
-      alert("Please enter a valid YouTube link!");
-      return;
+function SongRequest({ addSong }) {
+  const [query, setQuery] = useState("");
+
+  const handleRequest = async () => {
+    if (!query) return;
+
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
+      query
+    )}&type=video&key=${API_KEY}`;
+
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+
+      if (data.items && data.items.length > 0) {
+        const firstVideo = data.items[0];
+        const song = {
+          id: firstVideo.id.videoId,
+          title: firstVideo.snippet.title,
+          url: `https://www.youtube.com/embed/${firstVideo.id.videoId}`
+        };
+        addSong(song);
+        setQuery("");
+      } else {
+        alert("No valid song found. Try again!");
+      }
+    } catch (error) {
+      console.error("Error fetching song:", error);
     }
-    const songRef = ref(db, "queue");
-    push(songRef, { url: songUrl, requestedBy: "Anonymous" });
-    setSongUrl("");
   };
 
   return (
     <div>
-      <h2>Request a Song</h2>
       <input
         type="text"
-        placeholder="Enter YouTube link"
-        value={songUrl}
-        onChange={(e) => setSongUrl(e.target.value)}
+        placeholder="Enter song name..."
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
       />
-      <button onClick={addSong}>Add</button>
+      <button onClick={handleRequest}>Request Song</button>
     </div>
   );
 }

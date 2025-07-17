@@ -1,45 +1,31 @@
-import React, { useEffect, useState } from "react";
-import { ref, onValue, remove } from "firebase/database";
-import { db } from "../firebase";
+import React, { useState } from "react";
 
-function Player() {
-  const [currentSong, setCurrentSong] = useState(null);
+function Player({ song, onEnded }) {
+  const [videoMode, setVideoMode] = useState(true);
 
-  useEffect(() => {
-    const queueRef = ref(db, "queue");
-    onValue(queueRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const firstKey = Object.keys(data)[0];
-        const firstSong = data[firstKey];
-        setCurrentSong({ key: firstKey, url: firstSong.url });
-      } else {
-        setCurrentSong(null);
-      }
-    });
-  }, []);
-
-  const removeSong = () => {
-    if (currentSong) {
-      remove(ref(db, `queue/${currentSong.key}`));
-    }
-  };
-
-  if (!currentSong) return <p>No song playing</p>;
-
-  const videoId = currentSong.url.split("v=")[1]?.split("&")[0];
+  if (!song) return <p>No song playing...</p>;
 
   return (
     <div>
-      <h2>Now Playing</h2>
-      <iframe
-        width="100%"
-        height="250"
-        src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
-        allow="autoplay"
-        title="YouTube Player"
-      ></iframe>
-      <button onClick={removeSong}>Next</button>
+      <h2>Now Playing: {song.title}</h2>
+      <div style={{ display: videoMode ? "block" : "none" }}>
+        <iframe
+          width="560"
+          height="315"
+          src={`${song.url}?autoplay=1`}
+          title="YouTube player"
+          frameBorder="0"
+          allow="autoplay"
+          allowFullScreen
+          onLoad={() => {
+            console.log("Video Loaded");
+          }}
+        ></iframe>
+      </div>
+      {!videoMode && <p>Audio Only Mode (video hidden)</p>}
+      <button className="toggle-btn" onClick={() => setVideoMode(!videoMode)}>
+        {videoMode ? "Switch to Audio Only" : "Show Video"}
+      </button>
     </div>
   );
 }
