@@ -6,8 +6,10 @@ function Queue({ songs }) {
       <h3>🎶 Song Queue</h3>
       {songs.length > 0 ? (
         <ul>
-          {songs.map((s, i) => (
-            <li key={i}>{s.title}</li>
+          {songs.map((s) => (
+            <li key={s.key}>
+              {s.title} {s.from && `(From: ${s.from}${s.to ? ` → ${s.to}` : ""})`}
+            </li>
           ))}
         </ul>
       ) : (

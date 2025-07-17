@@ -7,6 +7,11 @@ function Player({ song, onEnded }) {
     const loadPlayer = () => {
       new window.YT.Player(playerRef.current, {
         videoId: song.id,
+        height: "300",
+        width: "500",
+        playerVars: {
+          autoplay: 1,
+        },
         events: {
           onStateChange: (event) => {
             if (event.data === window.YT.PlayerState.ENDED) {
@@ -30,6 +35,12 @@ function Player({ song, onEnded }) {
   return (
     <div>
       <h2>Now Playing: {song.title}</h2>
+      {song.from && (
+        <p>
+          Dedication: {song.from} {song.to && `→ ${song.to}`} <br />
+          {song.message && `"${song.message}"`}
+        </p>
+      )}
       <div id="player" ref={playerRef}></div>
     </div>
   );
