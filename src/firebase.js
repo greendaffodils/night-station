@@ -2,14 +2,26 @@ import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_API_KEY,
-  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
-  databaseURL: process.env.REACT_APP_DATABASE_URL,
-  projectId: process.env.REACT_APP_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_APP_ID
+  apiKey: "AIzaSyC9oz6KeW5gyIdZM6SK24lme-1iCUI67Ps",
+  authDomain: "night-station-81a0f.firebaseapp.com",
+  databaseURL: "https://night-station-81a0f-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "night-station-81a0f",
+  storageBucket: "night-station-81a0f.firebasestorage.app",
+  messagingSenderId: "530357162178",
+  appId: "1:530357162178:web:51fd0920c9b45aa90bab5b",
+  measurementId: "G-QR5VPSTW49"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// Export Database instance
 export const db = getDatabase(app);
+
+
+
+
+
+
+
+
