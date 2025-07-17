@@ -85,7 +85,8 @@ function SongRequest() {
   const [to, setTo] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleRequest = async () => {
+  const handleRequest = async (e) => {
+    e.preventDefault(); // Prevent refresh
     if (!query) return;
 
     const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
@@ -107,7 +108,7 @@ function SongRequest() {
         };
 
         const songsRef = ref(db, "songs");
-        push(songsRef, song);
+        await push(songsRef, song);
 
         setQuery("");
         setFrom("");
@@ -122,15 +123,14 @@ function SongRequest() {
   };
 
   return (
-    <div>
+    <div className="song-request">
       <input placeholder="Song name" value={query} onChange={(e) => setQuery(e.target.value)} />
       <input placeholder="From" value={from} onChange={(e) => setFrom(e.target.value)} />
       <input placeholder="To" value={to} onChange={(e) => setTo(e.target.value)} />
       <textarea placeholder="Message" value={message} onChange={(e) => setMessage(e.target.value)} />
-      <button onClick={handleRequest}>Request</button>
+      <button type="button" onClick={handleRequest}>Request</button>
     </div>
   );
 }
 
 export default SongRequest;
-
