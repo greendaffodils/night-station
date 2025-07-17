@@ -4,17 +4,19 @@ function Player({ song, onEnded }) {
   const playerRef = useRef(null);
 
   useEffect(() => {
-    const onPlayerReady = (event) => {
-      event.target.playVideo();
+    const loadPlayer = () => {
+      new window.YT.Player(playerRef.current, {
+        videoId: song.id,
+        events: {
+          onStateChange: (event) => {
+            if (event.data === window.YT.PlayerState.ENDED) {
+              onEnded();
+            }
+          },
+        },
+      });
     };
 
-    const onPlayerStateChange = (event) => {
-      if (event.data === window.YT.PlayerState.ENDED) {
-        onEnded();
-      }
-    };
-
-    // Load YouTube API
     if (!window.YT) {
       const tag = document.createElement("script");
       tag.src = "https://www.youtube.com/iframe_api";
@@ -22,20 +24,6 @@ function Player({ song, onEnded }) {
       document.body.appendChild(tag);
     } else {
       loadPlayer();
-    }
-
-    function loadPlayer() {
-      if (playerRef.current) {
-        new window.YT.Player(playerRef.current, {
-          height: "315",
-          width: "560",
-          videoId: song.id,
-          events: {
-            onReady: onPlayerReady,
-            onStateChange: onPlayerStateChange,
-          },
-        });
-      }
     }
   }, [song]);
 
