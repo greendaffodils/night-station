@@ -77,7 +77,7 @@ import React, { useState } from "react";
 import { ref, push } from "firebase/database";
 import { db } from "../firebase";
 
-const API_KEY = process.env.REACT_APP_YT_API_KEY;
+const API_KEY = process.env.REACT_APP_YOUTUBE_API_KEY;
 
 function SongRequest() {
   const [query, setQuery] = useState("");
