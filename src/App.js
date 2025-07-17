@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { ref, onValue, remove } from "firebase/database";
-import { db } from "./firebase";
-import Player from "./components/Player";
 import SongRequest from "./components/SongRequest";
+import Player from "./components/Player";
 import Queue from "./components/Queue";
+import { db } from "./firebase";
+import { ref, onValue } from "firebase/database";
 import "./App.css";
 
 function App() {
@@ -14,32 +14,32 @@ function App() {
     const songsRef = ref(db, "songs");
     onValue(songsRef, (snapshot) => {
       const data = snapshot.val() || {};
-      const songArray = Object.entries(data).map(([key, value]) => ({
-        key,
-        ...value,
-      }));
-      setSongs(songArray);
-      setCurrentSong(songArray.length > 0 ? songArray[0] : null);
+      const songList = Object.values(data);
+      setSongs(songList);
+
+      if (!currentSong && songList.length > 0) {
+        setCurrentSong(songList[0]);
+      }
     });
-  }, []);
+  }, [currentSong]);
 
   const playNext = () => {
-    if (songs.length > 0) {
-      const firstSongKey = songs[0].key;
-      remove(ref(db, `songs/${firstSongKey}`)); // Remove from Firebase
+    const remaining = songs.slice(1);
+    if (remaining.length > 0) {
+      setCurrentSong(remaining[0]);
+    } else {
+      setCurrentSong(null);
     }
   };
 
   return (
     <div className="app">
-      <h1>🎵 Night Station FM</h1>
-      {currentSong ? (
-        <Player song={currentSong} onEnded={playNext} />
-      ) : (
-        <p>No song playing...</p>
-      )}
+      <h1>🌙 Night Station FM</h1>
       <SongRequest />
       <Queue songs={songs} />
+      {currentSong && (
+        <Player song={currentSong} onEnd={playNext} />
+      )}
     </div>
   );
 }

@@ -1,46 +1,65 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-function Player({ song, onEnded }) {
+function Player({ song, onEnd }) {
+  const [mode, setMode] = useState("video");
   const playerRef = useRef(null);
 
   useEffect(() => {
-    const loadPlayer = () => {
-      new window.YT.Player(playerRef.current, {
-        videoId: song.id,
-        height: "300",
-        width: "500",
-        playerVars: {
-          autoplay: 1,
-        },
-        events: {
-          onStateChange: (event) => {
-            if (event.data === window.YT.PlayerState.ENDED) {
-              onEnded();
-            }
-          },
-        },
-      });
-    };
-
+    // Load YouTube IFrame API
     if (!window.YT) {
       const tag = document.createElement("script");
       tag.src = "https://www.youtube.com/iframe_api";
-      window.onYouTubeIframeAPIReady = loadPlayer;
       document.body.appendChild(tag);
-    } else {
-      loadPlayer();
     }
-  }, [song]);
+
+    window.onYouTubeIframeAPIReady = () => {
+      createPlayer();
+    };
+
+    if (window.YT && window.YT.Player) {
+      createPlayer();
+    }
+
+    function createPlayer() {
+      if (playerRef.current) {
+        new window.YT.Player(playerRef.current, {
+          height: mode === "video" ? "315" : "0",
+          width: mode === "video" ? "560" : "0",
+          videoId: song.id,
+          events: {
+            onReady: (e) => e.target.playVideo(),
+            onStateChange: (e) => {
+              if (e.data === window.YT.PlayerState.ENDED) {
+                onEnd();
+              }
+            },
+          },
+        });
+      }
+    }
+
+    // TTS intro
+    if (song) {
+      let intro = "";
+      if (song.from && song.to) {
+        intro = `From ${song.from} to ${song.to}. ${song.message || ""}`;
+      } else if (song.from) {
+        intro = `A request from ${song.from}. ${song.message || ""}`;
+      } else {
+        intro = "Now playing a great song!";
+      }
+
+      const utter = new SpeechSynthesisUtterance(intro);
+      speechSynthesis.speak(utter);
+    }
+  }, [song, mode, onEnd]);
 
   return (
-    <div>
+    <div className="player">
       <h2>Now Playing: {song.title}</h2>
-      {song.from && (
-        <p>
-          Dedication: {song.from} {song.to && `→ ${song.to}`} <br />
-          {song.message && `"${song.message}"`}
-        </p>
-      )}
+      <button onClick={() => setMode(mode === "video" ? "audio" : "video")}>
+        Switch to {mode === "video" ? "Audio" : "Video"}
+      </button>
       <div id="player" ref={playerRef}></div>
     </div>
   );

@@ -77,7 +77,7 @@ import React, { useState } from "react";
 import { ref, push } from "firebase/database";
 import { db } from "../firebase";
 
-const API_KEY = process.env.REACT_APP_YOUTUBE_API_KEY;
+const API_KEY = process.env.REACT_APP_YT_API_KEY;
 
 function SongRequest() {
   const [query, setQuery] = useState("");
@@ -86,22 +86,20 @@ function SongRequest() {
   const [message, setMessage] = useState("");
 
   const handleRequest = async (e) => {
-    e.preventDefault(); // Prevent refresh
+    e.preventDefault();
     if (!query) return;
 
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
-      query
-    )}&type=video&key=${API_KEY}`;
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&key=${API_KEY}`;
 
     try {
       const res = await fetch(url);
       const data = await res.json();
 
       if (data.items && data.items.length > 0) {
-        const firstVideo = data.items[0];
+        const video = data.items[0];
         const song = {
-          id: firstVideo.id.videoId,
-          title: firstVideo.snippet.title,
+          id: video.id.videoId,
+          title: video.snippet.title,
           from,
           to,
           message,
@@ -115,10 +113,10 @@ function SongRequest() {
         setTo("");
         setMessage("");
       } else {
-        alert("No valid song found. Try again!");
+        alert("Song not found!");
       }
-    } catch (error) {
-      console.error("Error fetching song:", error);
+    } catch (err) {
+      console.error("Error:", err);
     }
   };
 
@@ -128,7 +126,7 @@ function SongRequest() {
       <input placeholder="From" value={from} onChange={(e) => setFrom(e.target.value)} />
       <input placeholder="To" value={to} onChange={(e) => setTo(e.target.value)} />
       <textarea placeholder="Message" value={message} onChange={(e) => setMessage(e.target.value)} />
-      <button type="button" onClick={handleRequest}>Request</button>
+      <button onClick={handleRequest}>Request Song</button>
     </div>
   );
 }
