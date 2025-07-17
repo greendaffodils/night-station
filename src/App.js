@@ -20,12 +20,19 @@ function App() {
   };
 
   return (
-    <div className="app dark-mode">
-      <h1 className="title">🎵 Night Station FM</h1>
-      <Player song={currentSong} onEnded={playNext} />
-      <SongRequest addSong={addSong} />
-      <Queue songs={songs} />
-    </div>
+    <div className="app">
+  <h1 className="title">🎵 Night Station FM</h1>
+  <div className="card">
+    <Player song={currentSong} onEnded={playNext} />
+  </div>
+  <div className="card">
+    <SongRequest addSong={addSong} />
+  </div>
+  <div className="card">
+    <Queue songs={songs} />
+  </div>
+</div>
+
   );
 }
 

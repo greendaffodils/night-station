@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 
-const API_KEY = "YOUR_YOUTUBE_API_KEY"; // ✅ Replace with your YouTube API Key
+const API_KEY =  "AIzaSyClersXY0AhGM9aJklcz3dgWooYOPXYR98";
 
 function SongRequest({ addSong }) {
   const [query, setQuery] = useState("");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleRequest = async () => {
     if (!query) return;
@@ -21,10 +24,16 @@ function SongRequest({ addSong }) {
         const song = {
           id: firstVideo.id.videoId,
           title: firstVideo.snippet.title,
-          url: `https://www.youtube.com/embed/${firstVideo.id.videoId}`
+          url: `https://www.youtube.com/embed/${firstVideo.id.videoId}`,
+          from,
+          to,
+          message
         };
         addSong(song);
         setQuery("");
+        setFrom("");
+        setTo("");
+        setMessage("");
       } else {
         alert("No valid song found. Try again!");
       }
@@ -41,9 +50,27 @@ function SongRequest({ addSong }) {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
+      <input
+        type="text"
+        placeholder="From (Your name)"
+        value={from}
+        onChange={(e) => setFrom(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="To (Optional)"
+        value={to}
+        onChange={(e) => setTo(e.target.value)}
+      />
+      <textarea
+        placeholder="Message (Optional)"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+      />
       <button onClick={handleRequest}>Request Song</button>
     </div>
   );
 }
 
 export default SongRequest;
+

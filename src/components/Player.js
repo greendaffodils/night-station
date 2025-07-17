@@ -1,13 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function Player({ song, onEnded }) {
   const [videoMode, setVideoMode] = useState(true);
+
+  useEffect(() => {
+    if (song) {
+      let announcement = `Now playing ${song.title}.`;
+
+      if (song.from && !song.to) {
+        announcement = `This one is from ${song.from}. ${song.title}.`;
+      } else if (song.from && song.to) {
+        announcement = `From ${song.from} to ${song.to}. Here's ${song.title}.`;
+      }
+
+      if (song.message) {
+        announcement += ` Message says: ${song.message}`;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(announcement);
+      speechSynthesis.speak(utterance);
+    }
+  }, [song]);
 
   if (!song) return <p>No song playing...</p>;
 
   return (
     <div>
       <h2>Now Playing: {song.title}</h2>
+      {song.from && <p><b>From:</b> {song.from}</p>}
+      {song.to && <p><b>To:</b> {song.to}</p>}
+      {song.message && <p><b>Message:</b> {song.message}</p>}
+
       <div style={{ display: videoMode ? "block" : "none" }}>
         <iframe
           width="560"
@@ -17,9 +40,6 @@ function Player({ song, onEnded }) {
           frameBorder="0"
           allow="autoplay"
           allowFullScreen
-          onLoad={() => {
-            console.log("Video Loaded");
-          }}
         ></iframe>
       </div>
       {!videoMode && <p>Audio Only Mode (video hidden)</p>}
