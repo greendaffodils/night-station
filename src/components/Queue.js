@@ -7,7 +7,9 @@ function Queue({ songs }) {
       {songs.length > 0 ? (
         <ul>
           {songs.map((s, i) => (
-            <li key={i}>{s.title}</li>
+            <li key={i}>
+              {s.title} {s.from && `(From: ${s.from}${s.to ? ` → ${s.to}` : ""})`}
+            </li>
           ))}
         </ul>
       ) : (
